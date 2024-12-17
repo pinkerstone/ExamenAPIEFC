@@ -1,0 +1,6 @@
+@ExamenAPIEFC_HostAddress = http://localhost:5036
+
+GET {{ExamenAPIEFC_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
