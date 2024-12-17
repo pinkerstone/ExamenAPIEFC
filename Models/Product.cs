@@ -1,4 +1,6 @@
-﻿namespace ExamenAPIEFC.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ExamenAPIEFC.Models
 {
     public class Product
     {
@@ -8,6 +10,8 @@
 
         //FK
         public int CategoryID { get; set; }
+        
+        [JsonIgnore]
         public Category Category { get; set; }
 
     }

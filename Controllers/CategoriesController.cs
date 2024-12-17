@@ -3,6 +3,7 @@ using ExamenAPIEFC.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ExamenAPIEFC.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExamenAPIEFC.Controllers
 {
@@ -32,6 +33,18 @@ namespace ExamenAPIEFC.Controllers
         }
 
         [HttpGet]
+        public List<Category> Get2()
+        {
+            using (var context = new AppDbContext())
+            {
+                var categories = context.Categories.Include(x=> x.Products).ToList();
+
+
+                return categories;
+            }
+        }
+
+        [HttpGet]
         public CategoryResponseDTO GetById(int _ID)
         {
             using (var context = new AppDbContext())
@@ -44,6 +57,37 @@ namespace ExamenAPIEFC.Controllers
                     CategoryName = category.CategoryName,
                     CategoryDescription = category.CategoryDescription,
                 };
+                return response;
+            }
+        }
+
+        [HttpGet]
+        public CategoryResponseDTO GetById2(int _ID)
+        {
+            using (var context = new AppDbContext())
+            {
+                var response = context.Categories.Where(y => y.CategoryID == _ID).Select(x => new CategoryResponseDTO
+                {
+                    CategoryID = x.CategoryID,
+                    CategoryName = x.CategoryName,
+                    CategoryDescription = x.CategoryDescription
+                }).FirstOrDefault();
+                return response;
+            }
+        }
+
+        [HttpGet]
+        public List<CategoryResponseDTO> Get3()
+        {
+            using (var context = new AppDbContext())
+            {                
+                var response = context.Categories.Select(x=> new CategoryResponseDTO 
+                {
+                    CategoryID = x.CategoryID,
+                    CategoryName = x.CategoryName,
+                    CategoryDescription = x.CategoryDescription
+                }).ToList();
+
                 return response;
             }
         }
