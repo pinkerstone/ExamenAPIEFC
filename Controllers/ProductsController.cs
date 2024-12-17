@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ExamenAPIEFC.Models;
 using ExamenAPIEFC.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExamenAPIEFC.Controllers
 {
@@ -39,20 +40,17 @@ namespace ExamenAPIEFC.Controllers
         {
             using (var context = new AppDbContext())
             {
-                List<Product> products = new List<Product>();
-                List<ProductResponseDTO> response = new List<ProductResponseDTO>();
-                products = context.Products.ToList();
+                var response = context.Products.Include(p => p.Category)
+                                                .Select(x => new ProductResponseDTO
+                                                            { 
+                                                                ProductID = x.ProductID,
+                                                                ProductName = x.ProductName,
+                                                                ProductPrice = x.ProductPrice,
+                                                                CategoryName = x.Category.CategoryName
+                                                            }).ToList();    
 
-                foreach (var product in products)
-                {
-                    response.Add(new ProductResponseDTO
-                    {
-                        ProductID = product.ProductID,
-                        ProductName = product.ProductName,
-                        ProductPrice = product.ProductPrice,
-                    });
-                }
                 return response;
+                
             }
         }
         
@@ -61,14 +59,16 @@ namespace ExamenAPIEFC.Controllers
         {
             using (var context = new AppDbContext())
             {
-                Product product = new Product();
-                product = context.Products.Find(_ID);
-                ProductResponseDTO response = new ProductResponseDTO
-                {
-                    ProductID = product.ProductID,
-                    ProductName = product.ProductName,
-                    ProductPrice = product.ProductPrice,
-                };
+                var response = context.Products.Include(p=> p.Category)
+                                                .Where(x=> x.ProductID == _ID)
+                                                .Select(n=> new ProductResponseDTO
+                                                    {
+                                                        ProductID = n.ProductID,
+                                                        ProductName = n.ProductName,
+                                                        ProductPrice = n.ProductPrice,
+                                                        CategoryName = n.Category.CategoryName
+                                                    }).FirstOrDefault();
+                
                 return response;
             }
         }
